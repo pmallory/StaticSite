@@ -32,14 +32,11 @@ def parse_content(path):
             else:
                 content_dict[current_tag] += line
 
-    print content_dict
     return content_dict
-
-        
 
 for root, dirs, files in os.walk(settings.content_path):
     for file in files:
         if file.endswith('.pst'):
-            render(os.path.join(root,file), settings.template_path)
+            render(os.path.join(root,file))
 
 
