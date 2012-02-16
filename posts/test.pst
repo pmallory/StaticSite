@@ -1,6 +1,12 @@
-#title My Test Post
+#title
+My Test Post
+#/
 
-#header Header
+#header
+Header
+#/
 
-#content Lorem ispsum dolor set amet.
+#content
+Lorem ispsum dolor set amet.
+#/
 
