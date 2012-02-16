@@ -7,12 +7,13 @@ import settings
 
 def render(file):
     template = os.path.join(settings.template_path, get_template(file))
-    print template
     with open(template) as template_file:
         template_string = Template(template_file.read())
 
-
-    with open(os.path.join(settings.output_path, 'blah.html'), 'w') as out_file:
+    print file
+    out_name = os.path.basename(file).split('.')[0]+'.html'
+    with open(os.path.join(settings.output_path, out_name), 'w') as out_file:
+        print out_name 
         out_file.write(template_string.safe_substitute(parse_content(file)))
 
 def get_template(path):
