@@ -3,6 +3,8 @@
 import os
 from string import Template
 
+import markdown2
+
 import settings
 
 def render(file):
@@ -34,6 +36,9 @@ def parse_content(path):
                 content_dict[current_tag]= ''
             else:
                 content_dict[current_tag] += line
+
+    body = content_dict.get('body', '')
+    content_dict['body'] = markdown2.markdown(body)
 
     return content_dict
 
