@@ -10,10 +10,8 @@ def render(file):
     with open(template) as template_file:
         template_string = Template(template_file.read())
 
-    print file
     out_name = os.path.basename(file).split('.')[0]+'.html'
     with open(os.path.join(settings.output_path, out_name), 'w') as out_file:
-        print out_name 
         out_file.write(template_string.safe_substitute(parse_content(file)))
 
 def get_template(path):
@@ -37,7 +35,7 @@ def parse_content(path):
 
 for root, dirs, files in os.walk(settings.content_path):
     for file in files:
-        if file.endswith('.pst'):
+        if file.endswith('.cnt'):
             render(os.path.join(root,file))
 
 
