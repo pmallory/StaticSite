@@ -1,0 +1,22 @@
+StaticSite is a tool for generating static sites.
+
+The idea is you have a directory with templates, and a directory with content.
+The files in the content directory specify which template their text should be
+put into. The content file can be divided up into sections like "#title" and 
+"#body", which are put into the template in the corresponding spots. Sections
+titled #body are special because they are processed as markdown before they get
+put into the template. The output files are put in an output directory that
+mirrors the content directory, excecpt in html. This output folder can be
+served to the web, or rsynced to a remote server, or browsed locally, or
+whatever.
+
+StaticSite is in the early stages of development so all of that is liable to
+change.
+
+Goals:
+    -Template inheritance
+    -Option to only generate pages that are new/updated instead of the entire
+       site.
+    -special markdown/tags for gists and other stuff I think is important
+    -Some sort of menu maker thing?
+
