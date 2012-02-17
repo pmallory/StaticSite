@@ -10,8 +10,12 @@ def render(file):
     with open(template) as template_file:
         template_string = Template(template_file.read())
 
-    out_name = os.path.basename(file).split('.')[0]+'.html'
-    with open(os.path.join(settings.output_path, out_name), 'w') as out_file:
+    out_file = file.replace(settings.content_path,
+                            settings.output_path, 1).replace(
+                            '.cnt', '.html', 1)
+    if not os.path.exists(os.path.dirname(out_file)):
+        os.makedirs(os.path.dirname(out_file))
+    with open(out_file, 'w') as out_file:
         out_file.write(template_string.safe_substitute(parse_content(file)))
 
 def get_template(path):
