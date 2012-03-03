@@ -1,23 +1,25 @@
 #!/usr/bin/env python
 
 import os
+import shutil
 from string import Template
 import markdown2
 
 import settings
-def main():
-    for root, dirs, files in os.walk(settings.content_path):
-        for file in files:
-            if file.endswith('.cnt'):
-                render(os.path.join(root,file))
-
 
 def main():
-    """Find and process all of the content files."""
+    
+    # Render content, put it in output directory
     for root, dirs, files in os.walk(settings.content_path):
         for file in files:
+            # render content files
             if file.endswith('.cnt'):
                 render(os.path.join(root,file))
+            # just copy other files (images, etc)
+            else:
+                shutil.copy(os.path.join(root, file), 
+                            os.path.join(settings.output_path, file))
+
 
 def render(file):
     """Generate an html file given a raw conent file.
