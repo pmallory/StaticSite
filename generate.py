@@ -29,6 +29,9 @@ def main():
     else:
         process_content()
 
+def clean():
+    """Delete the output directory"""
+    shutil.rmtree(settings.output_path)
 
 def render(file):
     """Generate an html file given a raw conent file.
