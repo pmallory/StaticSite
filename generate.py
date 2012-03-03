@@ -2,10 +2,15 @@
 
 import os
 from string import Template
-
 import markdown2
 
 import settings
+def main():
+    for root, dirs, files in os.walk(settings.content_path):
+        for file in files:
+            if file.endswith('.cnt'):
+                render(os.path.join(root,file))
+
 
 def render(file):
     template = os.path.join(settings.template_path, get_template(file))
@@ -42,9 +47,4 @@ def parse_content(path):
 
     return content_dict
 
-for root, dirs, files in os.walk(settings.content_path):
-    for file in files:
-        if file.endswith('.cnt'):
-            render(os.path.join(root,file))
-
-
+main()
