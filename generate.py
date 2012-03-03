@@ -82,5 +82,20 @@ def parse_content(path):
 
     return content_dict
 
+def process_content():
+    if not os.path.exists(settings.output_path):
+        os.mkdir(settings.output_path)
+
+    # Render content, put it in output directory
+    for root, dirs, files in os.walk(settings.content_path):
+        for file in files:
+            # render content files
+            if file.endswith('.cnt'):
+                render(os.path.join(root,file))
+            # just copy other files (images, etc)
+            else:
+                shutil.copy(os.path.join(root, file), 
+                            os.path.join(settings.output_path, file))
+
 main()
 
