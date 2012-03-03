@@ -1,24 +1,33 @@
 #!/usr/bin/env python
 
+import argparse
 import os
 import shutil
 from string import Template
+
 import markdown2
 
 import settings
 
 def main():
-    
-    # Render content, put it in output directory
-    for root, dirs, files in os.walk(settings.content_path):
-        for file in files:
-            # render content files
-            if file.endswith('.cnt'):
-                render(os.path.join(root,file))
-            # just copy other files (images, etc)
-            else:
-                shutil.copy(os.path.join(root, file), 
-                            os.path.join(settings.output_path, file))
+    """Handle command line arguments, control flow"""
+
+    parser = argparse.ArgumentParser(description='Generate a static website.')
+    parser.add_argument('--clean', dest='to_clean', action='store_const',
+                         const=True, default=False,
+                         help='Clear the output directory.')
+    parser.add_argument('--refresh', dest='to_refresh', action='store_const',
+                         const=True, default=False,
+                         help='Empty the output directory before generating.')
+    args = parser.parse_args()
+
+    if args.to_clean:
+        clean()
+    elif args.to_refresh:
+        clean()
+        process_content()
+    else:
+        process_content()
 
 
 def render(file):
