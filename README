@@ -14,9 +14,10 @@ StaticSite is in the early stages of development so all of that is liable to
 change.
 
 Goals:
-    -Template inheritance
+    -Template inheritance/nested templates
     -Option to only generate pages that are new/updated instead of the entire
        site.
     -special markdown/tags for gists and other stuff I think is important
     -Some sort of menu maker thing?
+    -Figure out where CSS goes
 

@@ -12,7 +12,18 @@ def main():
                 render(os.path.join(root,file))
 
 
+def main():
+    """Find and process all of the content files."""
+    for root, dirs, files in os.walk(settings.content_path):
+        for file in files:
+            if file.endswith('.cnt'):
+                render(os.path.join(root,file))
+
 def render(file):
+    """Generate an html file given a raw conent file.
+
+    Overwrites files that already exist.
+    """
     template = os.path.join(settings.template_path, get_template(file))
     with open(template) as template_file:
         template_string = Template(template_file.read())
@@ -26,6 +37,11 @@ def render(file):
         out_file.write(template_string.safe_substitute(parse_content(file)))
 
 def get_template(path):
+    """Get the template name from a content file.
+
+    If the content file doesn't specify a template, return the default
+    from the settings file.
+    """
     with open(path) as content:
         if content.readline().strip() == '#template':
             return content.readline().strip()
@@ -33,6 +49,11 @@ def get_template(path):
             return settings.default_template
 
 def parse_content(path):
+    """Parse a content file, returning a dictionary of tag names mapped
+    to tag content.
+
+    Content in the #body tag is processed as markdown
+    """
     content_dict = {}
     with open(path) as raw_post:
         for line in raw_post.readlines():
@@ -48,3 +69,4 @@ def parse_content(path):
     return content_dict
 
 main()
+
