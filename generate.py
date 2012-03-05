@@ -3,6 +3,7 @@
 import argparse
 import os
 import shutil
+import filecmp
 from string import Template
 
 import markdown2
@@ -34,21 +35,14 @@ def clean():
     shutil.rmtree(settings.output_path)
 
 def render(file):
-    """Generate an html file given a raw conent file.
+    """Return html file given a raw conent file.
 
-    Overwrites files that already exist.
     """
     template = os.path.join(settings.template_path, get_template(file))
     with open(template) as template_file:
         template_string = Template(template_file.read())
 
-    out_file = file.replace(settings.content_path,
-                            settings.output_path, 1).replace(
-                            '.cnt', '.html', 1)
-    if not os.path.exists(os.path.dirname(out_file)):
-        os.makedirs(os.path.dirname(out_file))
-    with open(out_file, 'w') as out_file:
-        out_file.write(template_string.safe_substitute(parse_content(file)))
+    return template_string.safe_substitute(parse_content(file))
 
 def get_template(path):
     """Get the template name from a content file.
@@ -91,11 +85,32 @@ def process_content():
         for file in files:
             # render content files
             if file.endswith('.cnt'):
-                render(os.path.join(root,file))
+                output = render(os.path.join(root,file))
+                outpath = os.path.join(settings.output_path,
+                                       file.replace('.cnt', '.html', 1))
+                # don't bother copying if there is no change
+                if not diff(output, outpath):
+                    with open(outpath, 'w') as outfile:
+                        outfile.write(output)
             # just copy other files (images, etc)
             else:
-                shutil.copy(os.path.join(root, file), 
-                            os.path.join(settings.output_path, file))
+                src_file = os.path.join(root, file)
+                dest_file = os.path.join(settings.output_path, file)
+                # only copy if the file is new or changed
+                if (not os.path.exists(dest_file) or
+                   not filecmp.cmp(src_file, dest_file)):
+                        shutil.copy(os.path.join(root, file), 
+                                    os.path.join(settings.output_path, file))
+
+def diff(string, path):
+    """See if a string is the same as the contents of a file
+
+    Return true if the string and file are the same
+    """
+    if not os.path.exists(path):
+        return False
+    with open(path) as file:
+        return file.read() == string
 
 main()
 
