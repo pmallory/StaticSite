@@ -20,4 +20,5 @@ Goals:
     -special markdown/tags for gists and other stuff I think is important
     -Some sort of menu maker thing?
     -Figure out where CSS goes
+    -dev mode, watch for changes in content directory and regenerate as needed
 
