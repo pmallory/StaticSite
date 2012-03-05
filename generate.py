@@ -35,9 +35,7 @@ def clean():
     shutil.rmtree(settings.output_path)
 
 def render(file):
-    """Return html file given a raw conent file.
-
-    """
+    """Return html file given a raw conent file."""
     template = os.path.join(settings.template_path, get_template(file))
     with open(template) as template_file:
         template_string = Template(template_file.read())
@@ -77,6 +75,11 @@ def parse_content(path):
     return content_dict
 
 def process_content():
+    """Take raw content from content directory and render it to the output
+    directory.
+
+    Doesn't replace files that haven't changed.
+    """
     if not os.path.exists(settings.output_path):
         os.mkdir(settings.output_path)
 
