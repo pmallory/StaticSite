@@ -13,10 +13,11 @@ import settings
 def main():
     """Handle command line arguments, control flow"""
 
-    parser = argparse.ArgumentParser(description='Generate a static website.')
+    parser = argparse.ArgumentParser(description='Generate a static website by \
+                                        rendering new and modified files.')
     parser.add_argument('--clean', dest='to_clean', action='store_const',
                          const=True, default=False,
-                         help='Clear the output directory.')
+                         help='Clear the output directory and exit.')
     parser.add_argument('--refresh', dest='to_refresh', action='store_const',
                          const=True, default=False,
                          help='Empty the output directory before generating.')
