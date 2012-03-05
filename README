@@ -21,3 +21,5 @@ Goals:
     -Some sort of menu maker thing?
     -Figure out where CSS goes
     -Tags like "date" that get replaced with values when rendering.
+    -dev mode, watch for changes in content directory and regenerate as needed
+
