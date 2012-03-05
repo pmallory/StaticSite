@@ -14,8 +14,6 @@ class TestGenerate:
     def test_diff2(self):
         assert generate.diff('nope', './file.html') is False 
     def test_diff3(self):
-        try: 
-            generate.diff('./file.html', 'txt')
-            assert False
-        except IOError:
-            pass
+        assert generate.diff('./file.html', 'txt') is False
+    def test_diff4(self):
+       assert generate.diff('txt', 'invalid file!') is False
