@@ -10,6 +10,38 @@ import markdown2
 
 import settings
 
+
+class Category:
+    """Represent a category of pages such as 'posts'. 
+    
+    A category consists of a name and a list of pages.
+    """
+    def __init__(self, name):
+        self.name = name
+        self.pages = []
+
+    # list of all categories
+    categories = []
+
+    def add_page(self, path):
+        """Add a rendered page to this category."""
+        self.pages.append(path)
+
+    def build_index(self):
+        """Build an index page listing the pages in this category.
+
+        The index will be called <self.name>.html and placed in the root of the
+        output directory.
+        """
+
+    @staticmethod
+    def get_category(name):
+        for c in Category.categories:
+            if c.name == name:
+                return c
+            else:
+               return None
+
 def main():
     """Handle command line arguments, control flow"""
 
@@ -36,14 +68,14 @@ def clean():
     shutil.rmtree(settings.output_path)
 
 def render(file):
-    """Return html file given a raw conent file."""
-    template = os.path.join(settings.template_path, get_template(file))
+    """Return html file given a raw content file."""
+    template = os.path.join(settings.template_path, read_template(file))
     with open(template) as template_file:
         template_string = Template(template_file.read())
 
     return template_string.safe_substitute(parse_content(file))
 
-def get_template(path):
+def read_template(path):
     """Get the template name from a content file.
 
     If the content file doesn't specify a template, return the default
@@ -54,6 +86,19 @@ def get_template(path):
             return content.readline().strip()
         else:
             return settings.default_template
+
+def read_category(path):
+    """Get the category name from a content file.
+
+    If the content file doesn't specify a category return None
+    """
+    with open(path) as content:
+        prevline = '' 
+        for line in content:
+            if prevline.strip() == '#category':
+                return line
+            else:
+                prevline = line
 
 def parse_content(path):
     """Parse a content file, returning a dictionary of tag names mapped
@@ -89,9 +134,18 @@ def process_content():
         for file in files:
             # render content files
             if file.endswith('.cnt'):
-                output = render(os.path.join(root,file))
+                output = render(os.path.join(root, file))
                 outpath = os.path.join(settings.output_path,
                                        file.replace('.cnt', '.html', 1))
+                category_name = read_category(os.path.join(root, file)) 
+                if category_name:
+                    if category_name not in [c.name for c in Category.categories]:
+                        new_category = Category(category_name)
+                        new_category.add_page(outpath)
+                        Category.categories.append(new_category)
+                    else:
+                        Category.get_category(category_name).add_page(outpath)
+                        
                 # don't bother copying if there is no change
                 if not diff(output, outpath):
                     with open(outpath, 'w') as outfile:
