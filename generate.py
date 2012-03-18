@@ -41,14 +41,9 @@ class Category:
         The index will be called <self.name>.html and placed in the root of the
         output directory.
         """
+        for page in self.pages:
+            print page
 
-    @staticmethod
-    def get_category(name):
-        for c in Category.categories:
-            if c.name == name:
-                return c
-            else:
-               return None
 
 def main():
     """Handle command line arguments, control flow"""
@@ -70,6 +65,8 @@ def main():
         process_content()
     else:
         process_content()
+
+    Category.get_category('posts').build_index()
 
 def clean():
     """Delete the output directory"""
@@ -132,7 +129,8 @@ def read_element(path, element_name):
         for line in content:
             if prevline.strip() == '#'+element_name:
                 return line.strip()
-            else prevline = line
+            else:
+                prevline = line
 
 def parse_content(path):
     """Parse a content file, returning a dictionary of tag names mapped
@@ -176,11 +174,11 @@ def process_content():
                 if category_name:
                     if category_name not in [c.name for c in Category.categories]:
                         new_category = Category(category_name)
-                        new_category.add_page(outpath, title)
+                        new_category.add_page((outpath, title))
                         Category.categories.append(new_category)
                     else:
                         Category.get_category(category_name).add_page(
-                                                              outpath, title)
+                                                              (outpath, title))
                         
                 # don't bother copying if there is no change
                 if not diff(output, outpath):
