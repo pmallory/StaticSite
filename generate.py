@@ -23,6 +23,14 @@ class Category:
     # list of all categories
     categories = []
 
+    @staticmethod
+    def get_category(name):
+        for c in Category.categories:
+            if c.name == name:
+                return c
+            else:
+               return None
+
     def add_page(self, path):
         """Add a rendered page to this category."""
         self.pages.append(path)
@@ -96,7 +104,7 @@ def read_category(path):
         prevline = '' 
         for line in content:
             if prevline.strip() == '#category':
-                return line
+                return line.strip()
             else:
                 prevline = line
 
