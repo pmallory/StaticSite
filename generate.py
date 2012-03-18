@@ -108,6 +108,32 @@ def read_category(path):
             else:
                 prevline = line
 
+def read_title(path):
+    """Get the titlefrom a content file.
+
+    If the content file doesn't specify a title return None
+    """
+    with open(path) as content:
+        prevline = '' 
+        for line in content:
+            if prevline.strip() == '#category':
+                return line.strip()
+            else:
+                prevline = line
+
+def read_element(path, element_name):
+    """Get the value of a tag in a content file
+
+    Specify the path of the content file and the name of the tag you want.
+    eg "content/blog/post1.cnt" and "title".
+    """
+    with open(path) as content:
+        prevline = ''
+        for line in content:
+            if prevline.strip() == '#'+element_name:
+                return line.strip()
+            else prevline = line
+
 def parse_content(path):
     """Parse a content file, returning a dictionary of tag names mapped
     to tag content.
