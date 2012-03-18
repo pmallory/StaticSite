@@ -31,9 +31,9 @@ class Category:
             else:
                return None
 
-    def add_page(self, path):
+    def add_page(self, (path, title)):
         """Add a rendered page to this category."""
-        self.pages.append(path)
+        self.pages.append((path, title))
 
     def build_index(self):
         """Build an index page listing the pages in this category.
@@ -146,13 +146,15 @@ def process_content():
                 outpath = os.path.join(settings.output_path,
                                        file.replace('.cnt', '.html', 1))
                 category_name = read_category(os.path.join(root, file)) 
+                title = read_title(os.path.join(root, file))
                 if category_name:
                     if category_name not in [c.name for c in Category.categories]:
                         new_category = Category(category_name)
-                        new_category.add_page(outpath)
+                        new_category.add_page(outpath, title)
                         Category.categories.append(new_category)
                     else:
-                        Category.get_category(category_name).add_page(outpath)
+                        Category.get_category(category_name).add_page(
+                                                              outpath, title)
                         
                 # don't bother copying if there is no change
                 if not diff(output, outpath):
