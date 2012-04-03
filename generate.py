@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import codecs
 import os
 import shutil
 import filecmp
@@ -48,11 +49,11 @@ class Category:
 
         replacement_dict = {'title':self.name, 'body':link_list}
 
-        with open(settings.category_index_template, 'r') as template_file:
+        with codecs.open(settings.category_index_template, 'r', 'utf-8') as template_file:
             template = Template(template_file.read())
 
         index_path = os.path.join(settings.output_path, self.name) + '.html'
-        with open(index_path, 'w') as index_file:
+        with codecs.open(index_path, 'w', 'utf-8') as index_file:
             index_file.write(template.safe_substitute(replacement_dict))
 
 
@@ -86,7 +87,7 @@ def clean():
 def render(file):
     """Return html string given a raw content file."""
     template = os.path.join(settings.template_path, read_template(file))
-    with open(template) as template_file:
+    with codecs.open(template, 'r', 'utf-8') as template_file:
         template_string = Template(template_file.read())
 
     return template_string.safe_substitute(parse_content(file))
@@ -97,7 +98,7 @@ def read_template(path):
     If the content file doesn't specify a template, return the default
     from the settings file.
     """
-    with open(path) as content:
+    with codecs.open(path, 'r', 'utf-8') as content:
         if content.readline().strip() == '#template':
             return content.readline().strip()
         else:
@@ -108,7 +109,7 @@ def read_category(path):
 
     If the content file doesn't specify a category return None
     """
-    with open(path) as content:
+    with codecs.open(path, 'r', 'utf-8') as content:
         prevline = '' 
         for line in content:
             if prevline.strip() == '#category':
@@ -121,7 +122,7 @@ def read_title(path):
 
     If the content file doesn't specify a title return None
     """
-    with open(path) as content:
+    with codecs.open(path, 'r', 'utf-8') as content:
         prevline = '' 
         for line in content:
             if prevline.strip() == '#title':
@@ -136,7 +137,7 @@ def read_element(path, element_name):
     Specify the path of the content file and the name of the tag you want.
     eg "content/blog/post1.cnt" and "title".
     """
-    with open(path) as content:
+    with codecs.open(path, 'r', 'utf-8') as content:
         prevline = ''
         for line in content:
             if prevline.strip() == '#'+element_name:
@@ -151,7 +152,7 @@ def parse_content(path):
     Content in the #body tag is processed as markdown
     """
     content_dict = {}
-    with open(path) as raw_post:
+    with codecs.open(path, 'r', 'utf-8') as raw_post:
         for line in raw_post.readlines():
             if line.startswith('#'):
                 current_tag = line.strip('#\n')
@@ -193,7 +194,7 @@ def process_content():
                         
                 # don't bother copying if there is no change
                 if not diff(output, outpath):
-                    with open(outpath, 'w') as outfile:
+                    with codecs.open(outpath, 'w', 'utf-8') as outfile:
                         outfile.write(output)
             # just copy other files (images, etc)
             else:
@@ -212,7 +213,7 @@ def diff(string, path):
     """
     if not os.path.exists(path):
         return False
-    with open(path) as file:
+    with codecs.open(path, 'r', 'utf-8') as file:
         return file.read() == string
 
 main()
