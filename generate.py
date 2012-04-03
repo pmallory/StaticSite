@@ -31,7 +31,7 @@ class Category:
             else:
                return None
 
-    def add_page(self, (path, title)):
+    def add_page(self, path, title):
         """Add a rendered page to this category."""
         self.pages.append((path, title))
 
@@ -41,8 +41,19 @@ class Category:
         The index will be called <self.name>.html and placed in the root of the
         output directory.
         """
+        link_list = '<ul>'
         for page in self.pages:
-            print page
+            link_list += '<li><a href="{}">{}</a></li>'.format(page[0], page[1])
+        link_list += '</ul>'
+
+        replacement_dict = {'title':self.name, 'body':link_list}
+
+        with open(settings.category_index_template, 'r') as template_file:
+            template = Template(template_file.read())
+
+        index_path = os.path.join(settings.output_path, self.name) + '.html'
+        with open(index_path, 'w') as index_file:
+            index_file.write(template.safe_substitute(replacement_dict))
 
 
 def main():
@@ -66,14 +77,14 @@ def main():
     else:
         process_content()
 
-    Category.get_category('posts').build_index()
+    Category.get_category('Posts').build_index()
 
 def clean():
     """Delete the output directory"""
     shutil.rmtree(settings.output_path)
 
 def render(file):
-    """Return html file given a raw content file."""
+    """Return html string given a raw content file."""
     template = os.path.join(settings.template_path, read_template(file))
     with open(template) as template_file:
         template_string = Template(template_file.read())
@@ -113,11 +124,12 @@ def read_title(path):
     with open(path) as content:
         prevline = '' 
         for line in content:
-            if prevline.strip() == '#category':
+            if prevline.strip() == '#title':
                 return line.strip()
             else:
                 prevline = line
 
+# TODO test then use this, delete the other read funcs
 def read_element(path, element_name):
     """Get the value of a tag in a content file
 
@@ -162,23 +174,22 @@ def process_content():
         os.mkdir(settings.output_path)
 
     # Render content, put it in output directory
-    for root, dirs, files in os.walk(settings.content_path):
-        for file in files:
+    for root, dirs, files in os.walk(settings.content_path): 
+        for file in sorted(files, key=lambda f:os.path.getmtime(os.path.join(root, f))):
             # render content files
             if file.endswith('.cnt'):
+                server_path = file.replace('.cnt', '.html', 1)
                 output = render(os.path.join(root, file))
-                outpath = os.path.join(settings.output_path,
-                                       file.replace('.cnt', '.html', 1))
+                outpath = os.path.join(settings.output_path, server_path)
                 category_name = read_category(os.path.join(root, file)) 
                 title = read_title(os.path.join(root, file))
                 if category_name:
                     if category_name not in [c.name for c in Category.categories]:
                         new_category = Category(category_name)
-                        new_category.add_page((outpath, title))
+                        new_category.add_page(server_path, title)
                         Category.categories.append(new_category)
                     else:
-                        Category.get_category(category_name).add_page(
-                                                              (outpath, title))
+                        Category.get_category(category_name).add_page(server_path, title)
                         
                 # don't bother copying if there is no change
                 if not diff(output, outpath):

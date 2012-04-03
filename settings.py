@@ -7,6 +7,6 @@ content_path = './content'
 # where to output the rendered site
 output_path = './www'
 
-# used if a content file doesn't specify a template
-default_template = './templates/default.tmpl'
+# template to use for category index pages
+category_index_template = './templates/category_index.tmpl'
 
