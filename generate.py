@@ -199,12 +199,17 @@ def process_content():
             # just copy other files (images, etc)
             else:
                 src_file = os.path.join(root, file)
-                dest_file = os.path.join(settings.output_path, file)
+                dest_file = src_file.replace(settings.content_path,
+                                             settings.output_path)
+                
+                # make destination directory if needed
+                if not os.path.exists(os.path.dirname(dest_file)):
+                    os.mkdir(os.path.dirname(dest_file))
+
                 # only copy if the file is new or changed
                 if (not os.path.exists(dest_file) or
                    not filecmp.cmp(src_file, dest_file)):
-                        shutil.copy(os.path.join(root, file), 
-                                    os.path.join(settings.output_path, file))
+                        shutil.copy(src_file, dest_file)
 
 def diff(string, path):
     """See if a string is the same as the contents of a file
