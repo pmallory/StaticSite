@@ -78,7 +78,8 @@ def main():
     else:
         process_content()
 
-    Category.get_category('Posts').build_index()
+    for category in Category.categories:
+        category.build_index()
 
 def clean():
     """Delete the output directory"""
