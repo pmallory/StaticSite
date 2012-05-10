@@ -208,7 +208,6 @@ def process_content():
             else:
                 # ignore vim's swap files
                 if file.endswith(('swp', 'swo')):
-                    print 'skipping a file!'
                     continue
                 src_file = os.path.join(root, file)
                 dest_file = src_file.replace(settings.content_path,
