@@ -190,13 +190,17 @@ def process_content():
                                                        settings.output_path)
                 category_name = read_category(os.path.join(root, file)) 
                 title = read_title(os.path.join(root, file))
+                print settings.output_path
+                print 'outpath: '+outpath
+                print outpath.replace(settings.output_path, '')
                 if category_name:
                     if category_name not in [c.name for c in Category.categories]:
                         new_category = Category(category_name)
-                        new_category.add_page(server_path, title)
+                        new_category.add_page(outpath.replace(settings.output_path, '')
+, title)
                         Category.categories.append(new_category)
                     else:
-                        Category.get_category(category_name).add_page(server_path, title)
+                        Category.get_category(category_name).add_page(outpath.replace(settings.output_path, ''), title)
                         
                 # don't bother copying if there is no change
                 if not diff(output, outpath):
