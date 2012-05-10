@@ -82,8 +82,12 @@ def main():
         category.build_index()
 
 def clean():
-    """Delete the output directory"""
-    shutil.rmtree(settings.output_path)
+    """Delete the contents of the output directory"""
+    for root, dirs, files in os.walk(settings.output_path):
+        for f in files:
+            os.remove(os.path.join(root, f))
+        for d in dirs:
+            shutil.rmtree(os.path.join(root, d))
 
 def render(file):
     """Return html string given a raw content file."""
