@@ -206,6 +206,10 @@ def process_content():
                         outfile.write(output)
             # just copy other files (images, etc)
             else:
+                # ignore vim's swap files
+                if file.endswith(('swp', 'swo')):
+                    print 'skipping a file!'
+                    continue
                 src_file = os.path.join(root, file)
                 dest_file = src_file.replace(settings.content_path,
                                              settings.output_path)
