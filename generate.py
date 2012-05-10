@@ -190,9 +190,6 @@ def process_content():
                                                        settings.output_path)
                 category_name = read_category(os.path.join(root, file)) 
                 title = read_title(os.path.join(root, file))
-                print settings.output_path
-                print 'outpath: '+outpath
-                print outpath.replace(settings.output_path, '')
                 if category_name:
                     if category_name not in [c.name for c in Category.categories]:
                         new_category = Category(category_name)
