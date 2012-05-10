@@ -186,7 +186,8 @@ def process_content():
             if file.endswith('.cnt'):
                 server_path = file.replace('.cnt', '.html', 1)
                 output = render(os.path.join(root, file))
-                outpath = os.path.join(settings.output_path, server_path)
+                outpath =  os.path.join(root, server_path).replace(settings.content_path,
+                                                       settings.output_path)
                 category_name = read_category(os.path.join(root, file)) 
                 title = read_title(os.path.join(root, file))
                 if category_name:
@@ -199,6 +200,8 @@ def process_content():
                         
                 # don't bother copying if there is no change
                 if not diff(output, outpath):
+                    if not os.path.exists(os.path.dirname(outpath)):
+                        os.mkdir(os.path.dirname(outpath))
                     with codecs.open(outpath, 'w', 'utf-8') as outfile:
                         outfile.write(output)
             # just copy other files (images, etc)
