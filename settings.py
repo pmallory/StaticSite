@@ -8,5 +8,5 @@ content_path = './content'
 output_path = './www'
 
 # template to use for category index pages
-category_index_template = './templates/category_index.tmpl'
+category_index_template = './templates/post.tmpl'
 
