@@ -120,7 +120,6 @@ def render_digest(files):
         link_list += '<li><a href="{}">{}</a></li>'.format(page[0], page[1])
     link_list += '</ul>'
 
-    print link_list
     combined_content_dict['archive_list'] = link_list
 
     return template_string.safe_substitute(combined_content_dict)
