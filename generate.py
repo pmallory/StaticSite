@@ -206,9 +206,11 @@ def process_content():
     if not os.path.exists(settings.output_path):
         os.mkdir(settings.output_path)
 
+    # TODO this is for the digest page. A more general solution would be good.
+    blog_pages = []
+
     # Render content, put it in output directory
     for root, dirs, files in os.walk(settings.content_path): 
-        blog_pages = []
         for file in sorted(files, key=lambda f:os.path.getmtime(os.path.join(root, f))):
             # render content files
             if file.endswith('.cnt'):
