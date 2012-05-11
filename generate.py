@@ -28,8 +28,6 @@ class Category:
         for c in Category.categories:
             if c.name == name:
                 return c
-            else:
-               return None
 
     def add_page(self, path, title):
         """Add a rendered page to this category."""
