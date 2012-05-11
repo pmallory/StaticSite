@@ -11,7 +11,6 @@ import markdown2
 
 import settings
 
-
 class Category:
     """Represent a category of pages such as 'posts'. 
     
@@ -56,7 +55,6 @@ class Category:
         with codecs.open(index_path, 'w', 'utf-8') as index_file:
             index_file.write(template.safe_substitute(replacement_dict))
 
-
 def main():
     """Handle command line arguments, control flow"""
 
@@ -96,6 +94,38 @@ def render(file):
         template_string = Template(template_file.read())
 
     return template_string.safe_substitute(parse_content(file))
+
+def render_digest(files):
+    """Return an html string of several rendered content pages concatenated together"""
+    template = settings.digest_template
+    with codecs.open(template, 'r', 'utf-8') as template_file:
+        template_string = Template(template_file.read())
+
+    # Mash all of our content into one content dict
+    combined_content_dict = {}
+
+    for i, file in enumerate(reversed(files[:5])):
+        content_dict = parse_content(file) 
+        
+        # we only need the titles and bodies from each page
+        for key in content_dict.keys():
+            if not key in ['title', 'body']:
+                del content_dict[key]
+        
+        # stick this file's content_dict into the combined dict
+        for key in content_dict.keys():
+            combined_content_dict[key+str(i)] = content_dict[key]
+
+    # TODO this should be generalized to not just 'Blog'
+    link_list = '<ul>'
+    for page in Category.get_category('Blog').pages:
+        link_list += '<li><a href="{}">{}</a></li>'.format(page[0], page[1])
+    link_list += '</ul>'
+
+    print link_list
+    combined_content_dict['archive_list'] = link_list
+
+    return template_string.safe_substitute(combined_content_dict)
 
 def read_template(path):
     """Get the template name from a content file.
@@ -181,6 +211,7 @@ def process_content():
 
     # Render content, put it in output directory
     for root, dirs, files in os.walk(settings.content_path): 
+        blog_pages = []
         for file in sorted(files, key=lambda f:os.path.getmtime(os.path.join(root, f))):
             # render content files
             if file.endswith('.cnt'):
@@ -190,14 +221,15 @@ def process_content():
                                                        settings.output_path)
                 category_name = read_category(os.path.join(root, file)) 
                 title = read_title(os.path.join(root, file))
+                if category_name == 'Blog':
+                    blog_pages.append(os.path.join(root, file))
                 if category_name:
                     if category_name not in [c.name for c in Category.categories]:
                         new_category = Category(category_name)
-                        new_category.add_page(outpath.replace(settings.output_path, '')
-, title)
+                        new_category.add_page(outpath.replace(settings.output_path, ''), title)
                         Category.categories.append(new_category)
                     else:
-                        Category.get_category(category_name).add_page(outpath.replace(settings.output_path, ''), title)
+                         Category.get_category(category_name).add_page(outpath.replace(settings.output_path, ''), title)
                         
                 # don't bother copying if there is no change
                 if not diff(output, outpath):
@@ -222,6 +254,13 @@ def process_content():
                 if (not os.path.exists(dest_file) or
                    not filecmp.cmp(src_file, dest_file)):
                         shutil.copy(src_file, dest_file)
+
+    # if we have blog pages, make a digest
+    if len(blog_pages):
+        digest_html = render_digest(blog_pages)
+        with codecs.open(os.path.join(settings.output_path, 'index.html'), 'w', 'utf-8') as outfile:
+            outfile.write(digest_html)
+            
 
 def diff(string, path):
     """See if a string is the same as the contents of a file

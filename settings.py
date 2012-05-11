@@ -1,5 +1,8 @@
+import os
+
 # where to find templates
 template_path = './templates'
+digest_template = os.path.join(template_path, 'digest.tmpl')
 
 # where to find content
 content_path = './content'
