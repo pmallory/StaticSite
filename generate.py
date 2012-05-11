@@ -107,7 +107,7 @@ def render_digest(files):
         
         # we only need the titles and bodies from each page
         for key in content_dict.keys():
-            if not key in ['title', 'body']:
+            if not key in ['title', 'body', 'date']:
                 del content_dict[key]
         
         # stick this file's content_dict into the combined dict
@@ -116,7 +116,7 @@ def render_digest(files):
 
     # TODO this should be generalized to not just 'Blog'
     link_list = '<ul>'
-    for page in Category.get_category('Blog').pages:
+    for page in reversed(Category.get_category('Blog').pages):
         link_list += '<li><a href="{}">{}</a></li>'.format(page[0], page[1])
     link_list += '</ul>'
 
