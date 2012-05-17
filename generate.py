@@ -144,12 +144,11 @@ def render_feed(feed_items):
         item_url = item[1]
         public_url = item_url.replace(settings.output_path, settings.url)
 
-        c = pdc.Constants()
-        p = pdt.Calendar(c)        
+        p = pdt.Calendar()        
         item_date = item_dict.get('date')
         if item_date:
-            date_tuple = p.parseDateText(item_date)
-            date = datetime.datetime(date_tuple[0], date_tuple[1], date_tuple[2])
+            dt = p.parseDateText(item_date)
+            date = datetime.date(dt[0], dt[1], dt[2])
             feed_date = date.isoformat()
         else:
             feed_date = None
