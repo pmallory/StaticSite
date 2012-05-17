@@ -2,6 +2,9 @@
 
 import argparse
 import codecs
+import datetime
+import parsedatetime.parsedatetime as pdt
+import parsedatetime.parsedatetime_consts as pdc
 import os
 import shutil
 import filecmp
@@ -124,6 +127,41 @@ def render_digest(files):
 
     return template_string.safe_substitute(combined_content_dict)
 
+def render_feed(feed_items):
+    """mush feed content into xml template, return string.
+
+    feed_items in a list of three tuples of form: (content_string, output_url)
+    """
+    with codecs.open(settings.feed_template, 'r', 'utf-8') as template_file:
+        template_string = Template(template_file.read())
+
+    substitution_dict = {}
+    substitution_dict['runat'] = datetime.datetime.now().isoformat()
+
+    for i, item in enumerate(reversed(feed_items)):
+        item_dict = parse_content(item[0]) 
+
+        item_url = item[1]
+        public_url = item_url.replace(settings.output_path, settings.url)
+
+        c = pdc.Constants()
+        p = pdt.Calendar(c)        
+        item_date = item_dict.get('date')
+        if item_date:
+            date_tuple = p.parseDateText(item_date)
+            print 'date_tuple: {}'.format(date_tuple)
+            date = datetime.datetime(date_tuple[0], date_tuple[1], date_tuple[2])
+            feed_date = date.isoformat()
+        else:
+            feed_date = None
+
+        substitution_dict['title{}'.format(i)] = item_dict.get('title')
+        substitution_dict['url{}'.format(i)] = public_url
+        substitution_dict['date{}'.format(i)] = feed_date 
+        substitution_dict['text{}'.format(i)] = item_dict.get('body')
+
+    return template_string.safe_substitute(substitution_dict)
+
 def read_template(path):
     """Get the template name from a content file.
 
@@ -209,6 +247,8 @@ def process_content():
     # TODO this is for the digest page. A more general solution would be good.
     blog_pages = []
 
+    feed_content = []
+
     # Render content, put it in output directory
     for root, dirs, files in os.walk(settings.content_path): 
         for file in sorted(files, key=lambda f:os.path.getmtime(os.path.join(root, f))):
@@ -236,6 +276,8 @@ def process_content():
                         os.mkdir(os.path.dirname(outpath))
                     with codecs.open(outpath, 'w', 'utf-8') as outfile:
                         outfile.write(output)
+
+                feed_content.append((os.path.join(root,file), outpath))
             # just copy other files (images, etc)
             else:
                 # ignore vim's swap files
@@ -257,9 +299,15 @@ def process_content():
     # if we have blog pages, make a digest
     if len(blog_pages):
         digest_html = render_digest(blog_pages)
-        with codecs.open(os.path.join(settings.output_path, 'index.html'), 'w', 'utf-8') as outfile:
+        with codecs.open(os.path.join(settings.output_path, 'index.html'),
+                         'w', 'utf-8') as outfile:
             outfile.write(digest_html)
             
+    # Put three newest pages in the feed.
+    feed_xml = render_feed(feed_content)
+    with codecs.open(os.path.join(settings.output_path, 'feed.xml'),
+                                 'w', 'utf-8') as outfile:
+            outfile.write(feed_xml)
 
 def diff(string, path):
     """See if a string is the same as the contents of a file
