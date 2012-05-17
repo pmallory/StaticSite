@@ -149,7 +149,6 @@ def render_feed(feed_items):
         item_date = item_dict.get('date')
         if item_date:
             date_tuple = p.parseDateText(item_date)
-            print 'date_tuple: {}'.format(date_tuple)
             date = datetime.datetime(date_tuple[0], date_tuple[1], date_tuple[2])
             feed_date = date.isoformat()
         else:
